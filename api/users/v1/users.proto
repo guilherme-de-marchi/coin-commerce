@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package api.users.v1;
+option go_package="github.com/guilherme-de-marchi/coin-commerce/api/users/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string phone_number = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+service UserService {
+    rpc List (ListRequest) returns (ListResponse);
+    rpc Get (GetRequest) returns (User);
+    rpc Create (CreateRequest) returns (User);
+    rpc Update (UpdateRequest) returns (User);
+    rpc Delete (DeleteRequest) returns (google.protobuf.Empty);
+}
+
+message ListRequest {
+    int64 page_size = 1;
+    int64 page_token = 2;
+}
+
+message ListResponse {
+    repeated User users = 1;
+    int64 next_page_token = 2;
+}
+
+message GetRequest {
+    string id = 1;
+}
+
+message CreateRequest {
+    string name = 1;
+    string email = 2;
+    string phone = 3;
+}
+
+message UpdateRequest {
+    optional string name = 1;
+    optional string email = 2;
+    optional string phone = 3;
+}
+
+message DeleteRequest {
+    string id = 1;
+}

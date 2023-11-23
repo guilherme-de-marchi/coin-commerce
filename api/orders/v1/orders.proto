@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package api.orders.v1;
+option go_package="github.com/guilherme-de-marchi/coin-commerce/api/orders/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Order {
+    string id = 1;
+    string user_id = 2;
+    int64 pair = 3;
+    int64 amount = 4;
+    int64 direction = 5;
+    int64 type = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+service OrderService {
+    rpc List(ListRequest) returns (ListResponse);
+    rpc ListByUser(ListByUserRequest) returns (ListByUserResponse);
+    rpc Get(GetRequest) returns (Order);
+    rpc Create(CreateRequest) returns (Order);
+    rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
+}
+
+message ListRequest {
+    int64 page_size = 1;
+    int64 page_token = 2;
+}
+
+message ListResponse {
+    repeated Order orders = 1;
+    int64 next_page_token = 2;
+}
+
+message ListByUserRequest {
+    string user_id = 1;
+    int64 page_size = 2;
+    int64 page_token = 3;
+}
+
+message ListByUserResponse {
+    repeated Order orders = 1;
+    int64 next_page_token = 2;
+}
+
+message GetRequest {
+    string id = 1;
+}
+
+message CreateRequest {
+    string user_id = 1;
+    int64 pair = 2;
+    int64 amount = 3;
+    int64 direction = 4;
+    int64 type = 5;
+}
+
+message DeleteRequest {
+    string id = 1;
+}
