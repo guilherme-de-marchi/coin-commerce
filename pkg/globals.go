@@ -3,14 +3,12 @@ package pkg
 import (
 	"fmt"
 	"reflect"
-
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var Globals globals
 
 type globals struct {
-	RabbitMQ *amqp.Connection
+	MessageBroker *MessageBroker
 }
 
 func (g globals) Validate() error {

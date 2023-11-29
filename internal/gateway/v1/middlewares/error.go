@@ -26,7 +26,8 @@ func HandleErrors(c *gin.Context) {
 		out = append(out, gin.H{"error": msg})
 	}
 
-	log.Error().Any("errors", errors).Msg("")
-
-	c.JSON(-1, out)
+	if len(errors) != 0 {
+		log.Error().Any("errors", errors).Msg("")
+		c.JSON(-1, out)
+	}
 }
