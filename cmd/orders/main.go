@@ -6,7 +6,6 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"google.golang.org/protobuf/proto"
 
 	users "github.com/guilherme-de-marchi/coin-commerce/api/users/v1"
 )
@@ -32,31 +31,39 @@ func main() {
 	}
 	defer ch.Close()
 
-	q, err := ch.QueueDeclare("test", true, false, false, false, nil)
+	_, err = ch.QueueDeclare(
+		"users",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
 	if err != nil {
 		panic(err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
 	defer cancel()
 
-	deliveries, err := ch.ConsumeWithContext(ctx, q.Name, "consumer 1", true, false, false, false, nil)
+	deliveries, err := ch.ConsumeWithContext(ctx, "users", "consumer 1", true, false, false, false, nil)
 	if err != nil {
 		panic(err)
 	}
 
 	for d := range deliveries {
-		msg := &users.CreateRequest{}
-		err = proto.Unmarshal(d.Body, msg)
-		if err != nil {
-			panic(err)
-		}
+		// msg := &users.CreateRequest{}
+		// err = proto.Unmarshal(d.Body, msg)
+		// if err != nil {
+		// 	panic(err)
+		// }
 
-		fmt.Println(msg)
+		fmt.Println(d.Body)
 
 		err = ch.PublishWithContext(ctx, "", d.ReplyTo, false, false, amqp.Publishing{
-			ContentType: "plain/text",
-			Body:        d.Body,
+			ContentType:   "plain/text",
+			Body:          d.Body,
+			CorrelationId: d.CorrelationId,
 		})
 		if err != nil {
 			panic(err)
